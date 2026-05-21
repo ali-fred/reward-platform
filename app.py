@@ -1,6 +1,7 @@
 from flask import Flask, request, redirect, session
 import sqlite3
 import time
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = "secret123"
@@ -121,6 +122,7 @@ def register():
 
         username = request.form['username']
         email = request.form['email']
+        hashed_password = generate_password_hash(password)      
         password = request.form['password']
         referred_by = request.form.get('referral')
 
@@ -155,7 +157,7 @@ def register():
             """, (
                 username,
                 email,
-                password,
+                hashed_password,
                 referral_code,
                 referred_by
             ))
@@ -289,20 +291,26 @@ def login():
         conn = sqlite3.connect(DB)
         c = conn.cursor()
 
-        c.execute(
-            "SELECT * FROM users WHERE username=? AND password=?",
-            (username, password)
-        )
+        # GET USER BY USERNAME
+        c.execute("""
+        SELECT * FROM users
+        WHERE username=?
+        """, (username,))
 
         user = c.fetchone()
 
         conn.close()
 
-        if user:
+        # CHECK HASHED PASSWORD
+        if user and check_password_hash(user[3], password):
+
             session['user'] = username
+
             return redirect('/dashboard')
 
-        return "Wrong login"
+        else:
+
+            return "Wrong login"
 
     return """
     <h2>Login</h2>
@@ -315,15 +323,18 @@ def login():
         <label>Password</label><br>
         <input type='password' name='password'><br><br>
 
-        <button type='submit'>Login</button>
+        <button type='submit'>
+        Login
+        </button>
 
     </form>
 
     <br>
 
-    <a href='/register'>Create Account</a>
+    <a href='/register'>
+    Create Account
+    </a>
     """
-
 
 # =========================
 # DASHBOARD
