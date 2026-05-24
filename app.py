@@ -280,6 +280,7 @@ def register():
 # =========================
 # LOGIN
 # =========================
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
 
@@ -291,7 +292,6 @@ def login():
         conn = sqlite3.connect(DB)
         c = conn.cursor()
 
-        # GET USER BY USERNAME
         c.execute("""
         SELECT * FROM users
         WHERE username=?
@@ -301,16 +301,32 @@ def login():
 
         conn.close()
 
-        # CHECK HASHED PASSWORD
-        if user and check_password_hash(user[3], password):
+        if user:
 
-            session['user'] = username
+            stored_password = user[3]
 
-            return redirect('/dashboard')
+            # HASHED PASSWORD
+            if stored_password.startswith('scrypt:'):
 
-        else:
+                if check_password_hash(
+                    stored_password,
+                    password
+                ):
 
-            return "Wrong login"
+                    session['user'] = username
+
+                    return redirect('/dashboard')
+
+            # OLD PASSWORD
+            else:
+
+                if stored_password == password:
+
+                    session['user'] = username
+
+                    return redirect('/dashboard')
+
+        return "Wrong login"
 
     return """
     <h2>Login</h2>
@@ -335,7 +351,6 @@ def login():
     Create Account
     </a>
     """
-
 # =========================
 # DASHBOARD
 # =========================
