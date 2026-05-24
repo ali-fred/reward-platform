@@ -295,123 +295,163 @@ def dashboard():
     conn.close()
 
     return f"""
-    <html>
+<!DOCTYPE html>
+<html>
 
-    <head>
+<head>
 
-        <style>
+<title>Dashboard</title>
 
-            body{{
-                font-family:Arial;
-                background:#f4f4f4;
-                margin:0;
-                display:flex;
-                justify-content:center;
-                align-items:center;
-                height:100vh;
-            }}
+<style>
 
-            .card{{
-                background:white;
-                width:340px;
-                padding:30px;
-                border-radius:15px;
-                box-shadow:0 0 15px rgba(0,0,0,0.1);
-                text-align:center;
-            }}
+body {{
+    margin: 0;
+    padding: 0;
+    background: #0f172a;
+    font-family: Arial;
+    color: white;
+}}
 
-            h1{{
-                margin-top:0;
-            }}
+.header {{
+    background: #111827;
+    padding: 25px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+}}
 
-            .balance{{
-                color:green;
-                font-size:22px;
-                margin-bottom:20px;
-            }}
+.container {{
+    padding: 20px;
+}}
 
-            .ref{{
-                background:#f1f1f1;
-                padding:10px;
-                border-radius:8px;
-                margin-bottom:20px;
-                font-size:14px;
-            }}
+.card {{
+    background: #1e293b;
+    padding: 25px;
+    border-radius: 20px;
+    text-align: center;
+    margin-bottom: 25px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}}
 
-            a{{
-                display:block;
-                text-decoration:none;
-                background:#007bff;
-                color:white;
-                padding:12px;
-                border-radius:8px;
-                margin-bottom:10px;
-                font-size:16px;
-            }}
+.balance {{
+    font-size: 35px;
+    color: #22c55e;
+    margin-bottom: 15px;
+    font-weight: bold;
+}}
 
-            a:hover{{
-                background:#0056b3;
-            }}
+.referral {{
+    background: #334155;
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}}
 
-            .wallet{{
-                font-size:12px;
-                color:gray;
-                margin-bottom:20px;
-            }}
+.referral-code {{
+    font-size: 24px;
+    color: #38bdf8;
+    font-weight: bold;
+}}
 
-        </style>
+.wallet {{
+    color: #cbd5e1;
+    font-size: 14px;
+    margin-top: 10px;
+    word-wrap: break-word;
+}}
 
-    </head>
+.btn {{
+    display: block;
+    background: #2563eb;
+    color: white;
+    text-decoration: none;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 18px;
+    transition: 0.3s;
+}}
 
-    <body>
+.btn:hover {{
+    background: #1d4ed8;
+}}
 
-        <div class='card'>
+.footer {{
+    text-align: center;
+    margin-top: 30px;
+    color: gray;
+    font-size: 13px;
+}}
 
-            <h1>Welcome {session['user']}</h1>
+</style>
 
-            <div class='balance'>
-                {balance} USDT
-            </div>
+</head>
 
-            <div class='ref'>
-                <strong>Your Invitation Code:</strong><br>
-                {referral_code}
-            </div>
+<body>
 
-            <div class='wallet'>
-                Wallet: {wallet}
-            </div>
+<div class="header">
+Welcome {session['user']}
+</div>
 
-            <a href='/ads'>
-            Publicités
-            </a>
+<div class="container">
 
-            <a href='/create_ad'>
-            Create Ad
-            </a>
+<div class="card">
 
-            <a href='/withdraw'>
-            Withdraw
-            </a>
+<div class="balance">
+{balance} USDT
+</div>
 
-            <a href='/wallet'>
-            Wallet & Referral
-            </a>
+<div class="referral">
 
-            <a href='/admin'>
-            Admin Panel
-            </a>
+<p>Your Invitation Code</p>
 
-            <a href='/logout'>
-            Logout
-            </a>
+<div class="referral-code">
+{referral_code}
+</div>
 
-        </div>
+</div>
 
-    </body>
+<div class="wallet">
+Wallet: {wallet}
+</div>
 
-    </html>
-    """
+</div>
+
+<a class="btn" href="/ads">
+🎬 Watch Ads
+</a>
+
+<a class="btn" href="/create_ad">
+📢 Create Ad
+</a>
+
+<a class="btn" href="/withdraw">
+💸 Withdraw
+</a>
+
+<a class="btn" href="/wallet">
+👛 Wallet & Referral
+</a>
+
+<a class="btn" href="/admin">
+🛠 Admin Panel
+</a>
+
+<a class="btn" href="/logout">
+🚪 Logout
+</a>
+
+<div class="footer">
+Reward Platform © 2026
+</div>
+
+</div>
+
+</body>
+</html>
+"""
 # =========================
 # CREATE AD
 # =========================
