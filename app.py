@@ -122,37 +122,29 @@ def register():
 
         username = request.form['username']
         email = request.form['email']
-        hashed_password = generate_password_hash(password)      
         password = request.form['password']
+
         referred_by = request.form.get('referral')
 
-        # CREATE USER REFERRAL CODE
         referral_code = username.upper() + "123"
+
+        # HASH PASSWORD
+        hashed_password = generate_password_hash(password)
 
         conn = sqlite3.connect(DB)
         c = conn.cursor()
 
-        # FIND SPONSOR
-        bonus_user = None
-
-        if referred_by:
-
-            c.execute(
-                "SELECT username FROM users WHERE referral_code=?",
-                (referred_by,)
-            )
-
-            sponsor = c.fetchone()
-
-            if sponsor:
-                bonus_user = sponsor[0]
-
         try:
 
-            # CREATE ACCOUNT
             c.execute("""
             INSERT INTO users
-            (username, email, password, referral_code, referred_by)
+            (
+                username,
+                email,
+                password,
+                referral_code,
+                referred_by
+            )
             VALUES (?,?,?,?,?)
             """, (
                 username,
@@ -164,17 +156,8 @@ def register():
 
             conn.commit()
 
-            # REFERRAL BONUS
-            if bonus_user:
-
-                c.execute(
-                    "UPDATE users SET balance = balance + 0.01 WHERE username=?",
-                    (bonus_user,)
-                )
-
-                conn.commit()
-
         except:
+
             return "User already exists"
 
         conn.close()
@@ -182,101 +165,35 @@ def register():
         return redirect('/login')
 
     return """
-    <html>
+    <h2>Register Account</h2>
 
-    <head>
+    <form method='POST'>
 
-        <style>
+        <label>Username</label><br>
+        <input name='username'><br><br>
 
-            body{
-                font-family: Arial;
-                background:#f4f4f4;
-                display:flex;
-                justify-content:center;
-                align-items:center;
-                height:100vh;
-                margin:0;
-            }
+        <label>Email</label><br>
+        <input name='email'><br><br>
 
-            .card{
-                background:white;
-                padding:30px;
-                width:320px;
-                border-radius:12px;
-                box-shadow:0 0 10px rgba(0,0,0,0.1);
-            }
+        <label>Password</label><br>
+        <input type='password' name='password'><br><br>
 
-            h2{
-                text-align:center;
-            }
+        <label>Referral Code (optional)</label><br>
+        <input name='referral'><br><br>
 
-            input{
-                width:100%;
-                padding:10px;
-                margin-top:5px;
-                margin-bottom:15px;
-                border-radius:8px;
-                border:1px solid #ccc;
-            }
+        <button type='submit'>
+        Create Account
+        </button>
 
-            button{
-                width:100%;
-                padding:12px;
-                background:#007bff;
-                color:white;
-                border:none;
-                border-radius:8px;
-                font-size:16px;
-            }
+    </form>
 
-            a{
-                text-decoration:none;
-            }
+    <br>
 
-        </style>
-
-    </head>
-
-    <body>
-
-        <div class='card'>
-
-            <h2>Create Account</h2>
-
-            <form method='POST'>
-
-                <label>Username</label>
-                <input name='username' required>
-
-                <label>Email</label>
-                <input name='email' required>
-
-                <label>Password</label>
-                <input type='password' name='password' required>
-
-                <label>Invitation Code (optional)</label>
-                <input name='referral'>
-
-                <button type='submit'>
-                Register
-                </button>
-
-            </form>
-
-            <br>
-
-            <center>
-            <a href='/login'>
-            Already have account? Login
-            </a>
-            </center>
-
-        </div>
-
-    </body>
-
-    </html>
+    <a href='/login'>
+    Login
+    </a>
     """
+
 # =========================
 # LOGIN
 # =========================
