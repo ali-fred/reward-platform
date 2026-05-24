@@ -813,10 +813,11 @@ def claim(ad_id):
             """
 
     # GET REWARD
-    c.execute(
-        "SELECT reward FROM ads WHERE id=?",
-        (ad_id,)
-    )
+    c.execute("""
+        SELECT reward
+        FROM ads
+        WHERE id=?
+    """, (ad_id,))
 
     ad = c.fetchone()
 
@@ -824,12 +825,37 @@ def claim(ad_id):
 
         reward = ad[0]
 
-        # UPDATE BALANCE
+        # USER REWARD
         c.execute("""
             UPDATE users
             SET balance = balance + ?
             WHERE username=?
         """, (reward, username))
+
+        # GET REFERRER
+        c.execute("""
+            SELECT referred_by
+            FROM users
+            WHERE username=?
+        """, (username,))
+
+        ref_data = c.fetchone()
+
+        if ref_data and ref_data[0]:
+
+            referred_by = ref_data[0]
+
+            referral_bonus = 0.001
+
+            # GIVE BONUS TO INVITER
+            c.execute("""
+                UPDATE users
+                SET balance = balance + ?
+                WHERE referral_code=?
+            """, (
+                referral_bonus,
+                referred_by
+            ))
 
         # SAVE WATCH
         c.execute("""
