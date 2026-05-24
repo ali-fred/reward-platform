@@ -523,44 +523,58 @@ def watch(ad_id):
     conn = sqlite3.connect(DB)
     c = conn.cursor()
 
+    # GET AD
+    c.execute("""
+    SELECT * FROM ads
+    WHERE id=?
+    """, (ad_id,))
+
+    ad = c.fetchone()
+
     # SAVE START TIME
-    c.execute(
-        """
-        INSERT INTO ad_views
-        (username, ad_id, start_time)
-        VALUES (?,?,?)
-        """,
-        (username, ad_id, time.time())
-    )
+    c.execute("""
+    INSERT INTO ad_views
+    (username, ad_id, start_time)
+    VALUES (?,?,?)
+    """, (
+        username,
+        ad_id,
+        time.time()
+    ))
 
     conn.commit()
     conn.close()
 
     return f"""
-
     <html>
 
     <head>
 
+        <title>Watch Ad</title>
+
         <style>
 
-            body{{
-                font-family:Arial;
-                background:#f4f4f4;
-                display:flex;
-                justify-content:center;
-                align-items:center;
-                height:100vh;
-                margin:0;
+            body {{
+
+                background: #111;
+                color: white;
+                font-family: Arial;
+                text-align: center;
+                padding-top: 30px;
             }}
 
-            .card{{
-                background:white;
-                padding:30px;
-                border-radius:15px;
-                width:320px;
-                text-align:center;
-                box-shadow:0 0 15px rgba(0,0,0,0.1);
+            iframe {{
+
+                width: 90%;
+                height: 250px;
+                border-radius: 10px;
+            }}
+
+            .timer {{
+
+                font-size: 30px;
+                margin-top: 20px;
+                color: lime;
             }}
 
         </style>
@@ -569,22 +583,45 @@ def watch(ad_id):
 
     <body>
 
-        <div class='card'>
+        <h2>
+        Watching Advertisement
+        </h2>
 
-            <h2>Watching Ad...</h2>
+        <iframe
+        src="{ad[2]}"
+        allowfullscreen>
+        </iframe>
 
-            <p>
-            Please wait 15 seconds
-            to earn reward
-            </p>
-
+        <div class='timer' id='count'>
+        15
         </div>
+
+        <p>
+        Please watch the video
+        to earn reward
+        </p>
 
         <script>
 
-            setTimeout(function(){{
-                window.location.href='/claim/{ad_id}';
-            }}, 15000);
+        let timeLeft = 15;
+
+        let timer = setInterval(function() {{
+
+            timeLeft--;
+
+            document.getElementById(
+                "count"
+            ).innerHTML = timeLeft;
+
+            if(timeLeft <= 0) {{
+
+                clearInterval(timer);
+
+                window.location.href =
+                "/claim/{ad_id}";
+            }}
+
+        }}, 1000);
 
         </script>
 
@@ -592,7 +629,6 @@ def watch(ad_id):
 
     </html>
     """
-
 # =========================
 # CLAIM REWARD
 # =========================
