@@ -516,38 +516,121 @@ def ads():
     conn = sqlite3.connect(DB)
     c = conn.cursor()
 
-    c.execute("SELECT * FROM ads")
+    c.execute("""
+    SELECT id, title, link, reward, duration
+    FROM ads
+    ORDER BY id DESC
+    """)
 
     ads = c.fetchall()
 
     conn.close()
 
-    html = "<h2>Available Ads</h2>"
+    html = """
+    <!DOCTYPE html>
+    <html>
+
+    <head>
+
+    <title>Ads</title>
+
+    <style>
+
+    body{
+        background:#0f172a;
+        font-family:Arial;
+        color:white;
+        margin:0;
+        padding:20px;
+    }
+
+    h1{
+        text-align:center;
+    }
+
+    .card{
+        background:#1e293b;
+        padding:20px;
+        border-radius:15px;
+        margin-bottom:20px;
+        box-shadow:0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .title{
+        font-size:22px;
+        margin-bottom:10px;
+    }
+
+    .reward{
+        color:#22c55e;
+        font-size:18px;
+        margin-bottom:15px;
+    }
+
+    .btn{
+        display:block;
+        background:#2563eb;
+        color:white;
+        text-decoration:none;
+        text-align:center;
+        padding:14px;
+        border-radius:10px;
+        margin-top:10px;
+    }
+
+    .btn:hover{
+        background:#1d4ed8;
+    }
+
+    </style>
+
+    </head>
+
+    <body>
+
+    <h1>🎬 Available Ads</h1>
+    """
 
     for ad in ads:
 
         html += f"""
-        <p>
 
-        <strong>{ad[1]}</strong><br><br>
+        <div class='card'>
 
-        Reward: {ad[3]} USDT<br><br>
+            <div class='title'>
+            {ad[1]}
+            </div>
 
-        <a href='{ad[2]}' target='_blank'>
-        Visit Sponsor
-        </a><br><br>
+            <div class='reward'>
+            Earn {ad[3]} USDT
+            </div>
 
-        <a href='/watch/{ad[0]}'>
-        Watch Ad
-        </a>
+            <a class='btn'
+            href='{ad[2]}'
+            target='_blank'>
+            🌍 Visit Sponsor
+            </a>
 
-        </p>
+            <a class='btn'
+            href='/watch/{ad[0]}'>
+            ▶ Watch & Earn
+            </a>
 
-        <hr>
+        </div>
         """
 
-    return html
+    html += """
 
+    <a class='btn'
+    href='/dashboard'>
+    ⬅ Back Dashboard
+    </a>
+
+    </body>
+    </html>
+    """
+
+    return html
 
 # =========================
 # WATCH AD
